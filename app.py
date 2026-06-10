@@ -653,58 +653,11 @@ def clean_assistant_text(text):
     if not text:
         return ""
     import re
-    # 1. Strip xml-like tags like <think>...</think> or <thinking>...</thinking>
+    # Strip xml-like tags like <think>...</think> or <thinking>...</thinking>
     text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL | re.IGNORECASE)
     text = re.sub(r'<think>.*', '', text, flags=re.DOTALL | re.IGNORECASE)
     text = re.sub(r'<thinking>.*?</thinking>', '', text, flags=re.DOTALL | re.IGNORECASE)
     text = re.sub(r'<thinking>.*', '', text, flags=re.DOTALL | re.IGNORECASE)
-    
-    # 2. Check for typical reasoning/thinking patterns
-    paragraphs = text.split("\n")
-    cleaned_paragraphs = []
-    
-    thinking_markers = [
-        "okay, the user", "the user is", "the user wants", "the user has", 
-        "let me think", "let's think", "thinking process:", "i should check", 
-        "i need to", "i will run", "looking at the", "based on the", 
-        "therefore, i should", "i will respond", "since the docs", "user is asking"
-    ]
-    
-    for p in paragraphs:
-        p_strip = p.strip()
-        if not p_strip:
-            continue
-            
-        lower_p = p_strip.lower()
-        
-        # Check if the paragraph starts with a thinking marker
-        is_thinking = any(lower_p.startswith(marker) for marker in thinking_markers)
-        
-        # If it contains references to "the user is asking" or "documentation I have"
-        if "the user" in lower_p and ("asking" in lower_p or "wants" in lower_p or "typo" in lower_p or "mood" in lower_p or "query" in lower_p or "request" in lower_p):
-            is_thinking = True
-            
-        if "documentation" in lower_p and ("reference" in lower_p or "explicitly" in lower_p or "scanning" in lower_p or "docs" in lower_p):
-            is_thinking = True
-            
-        if "i should" in lower_p and ("respond" in lower_p or "say" in lower_p or "admit" in lower_p or "state" in lower_p or "explain" in lower_p):
-            # Check if this paragraph contains the actual response at the end.
-            match = re.search(r'(?:respond|say|tell them|state|answer)\s+that\s+(.*)', p_strip, re.IGNORECASE)
-            if match:
-                actual_response = match.group(1)
-                if actual_response:
-                    actual_response = actual_response[0].upper() + actual_response[1:]
-                    cleaned_paragraphs.append(actual_response)
-                continue
-            is_thinking = True
-            
-        if is_thinking:
-            continue
-            
-        cleaned_paragraphs.append(p_strip)
-        
-    if cleaned_paragraphs:
-        return "\n\n".join(cleaned_paragraphs).strip()
     return text.strip()
 
 def agent_chat_thread(text):

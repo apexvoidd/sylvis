@@ -110,8 +110,9 @@ To verify the newly compiled borderless S.Y.L.V.I.S. PC Assistant:
 
 3. **Reasoning & Chain-of-Thought Filtering**:
    - Added a `clean_assistant_text` function to post-process model responses.
-   - Automatically strips XML-style `<think>` or `<thinking>` blocks.
-   - Cleans out meta-commentary paragraphs (like "Okay, the user is...") and extracts the direct conversational response from the final meta-reasoning statement.
-   - Ensures that chat logs, TTS voice engines, and `chat_history` store only the final conversational reply, keeping the system clean and preventing the model from repeating its leaked reasoning in subsequent turns.
+   - Automatically strips XML-style `<think>` or `<thinking>` blocks (including unclosed/dangling tags).
+   - This ensures that if reasoning models (like DeepSeek-R1) generate inner thoughts, they are cleanly removed from the console logging, TTS speaking engine, and saved `chat_history`.
+   - The filter focuses purely on tag-based stripping to avoid false positives (e.g. it will never accidentally block regular sentences starting with "I need to", "Let me think", or "I will run").
+
 
 
