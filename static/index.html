@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.Y.L.V.I.S. - Floating Assistant</title>
+    <meta name="description" content="SYLVIS — Your futuristic cute AI companion for PC control, voice commands, and intelligent assistance.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Outfit:wght@300;400;600&family=M+PLUS+Rounded+1c:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background layers -->
+    <div class="grid-overlay"></div>
+    <div class="scanline"></div>
+
+    <!-- MAIN OVERLAY CONTAINER -->
+    <div class="overlay-container">
+        
+        <!-- WIDGET WRAPPER: Drag region for moving the widget -->
+        <div id="widget-container" class="pywebview-drag-region">
+            
+            <!-- Sylvis Circular Avatar/Visualizer -->
+            <div class="arc-reactor" id="arc-reactor">
+                <!-- Canvas overlay for voice frequencies -->
+                <canvas id="visualizer-canvas" class="visualizer-canvas"></canvas>
+                <!-- Orbital rings -->
+                <div class="reactor-ring outer"></div>
+                <div class="reactor-ring middle"></div>
+                <div class="reactor-ring inner"></div>
+                <div class="reactor-core">
+                    <div class="reactor-symbol" id="reactor-status-symbol">🌸</div>
+                </div>
+            </div>
+
+            <!-- Controls bar on hovering/bottom -->
+            <div class="widget-controls">
+                <button class="widget-icon-btn" id="widget-keyboard-btn" title="Open Text Interface">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                        <line x1="6" y1="8" x2="6" y2="8"></line>
+                        <line x1="10" y1="8" x2="10" y2="8"></line>
+                        <line x1="14" y1="8" x2="14" y2="8"></line>
+                        <line x1="18" y1="8" x2="18" y2="8"></line>
+                        <line x1="6" y1="12" x2="6" y2="12"></line>
+                        <line x1="10" y1="12" x2="10" y2="12"></line>
+                        <line x1="14" y1="12" x2="14" y2="12"></line>
+                        <line x1="18" y1="12" x2="18" y2="12"></line>
+                        <line x1="7" y1="16" x2="17" y2="16"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="widget-tooltip" id="widget-tooltip-text">Scroll Lock to Talk</div>
+            <div class="reactor-status-text" id="voice-status-text">READY</div>
+        </div>
+
+        <!-- COLLAPSIBLE CONSOLE PANEL: Chat feed, console logs, system specs -->
+        <div id="console-panel" style="display: none;">
+            <div class="console-panel-header">
+                <span class="panel-header-title">✦ SYLVIS CONSOLE MONITOR</span>
+                <button class="close-console-btn" id="close-console-panel-btn" title="Collapse Logs">&times;</button>
+            </div>
+            
+            <div class="console-panel-body">
+                <!-- System Diagnostics -->
+                <div class="console-section-title">SYSTEM METRICS</div>
+                <div class="metrics-grid">
+                    <div class="metric-mini">
+                        <div class="mini-header">
+                            <span>CPU</span>
+                            <span id="cpu-value">0%</span>
+                        </div>
+                        <div class="progress-mini">
+                            <div class="bar-mini" id="cpu-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-mini">
+                        <div class="mini-header">
+                            <span>RAM</span>
+                            <span id="mem-value">0%</span>
+                        </div>
+                        <div class="progress-mini">
+                            <div class="bar-mini" id="mem-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="metric-mini">
+                        <div class="mini-header">
+                            <span>DISK</span>
+                            <span id="disk-value">0%</span>
+                        </div>
+                        <div class="progress-mini">
+                            <div class="bar-mini" id="disk-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Feed -->
+                <div class="console-section-title">CHAT FEED &amp; INPUT</div>
+                <div class="chat-section">
+                    <div class="speech-box" id="speech-preview-box">
+                        <span class="speech-placeholder">Awaiting command...</span>
+                    </div>
+                    
+                    <div class="input-controls">
+                        <!-- Manual chat input -->
+                        <form class="text-input-form" id="chat-form">
+                            <input type="text" id="chat-input" placeholder="Type command here..." autocomplete="off">
+                            <button type="submit" class="send-btn" id="send-btn" aria-label="Send">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Terminal activity logs -->
+                <div class="console-section-title">SYSTEM ACTIVITY LOG</div>
+                <div class="terminal-container">
+                    <div class="terminal-body" id="terminal-output">
+                        <div class="term-line system">[BOOT] S.Y.L.V.I.S. Core initialized. ✦</div>
+                    </div>
+                </div>
+                
+                <!-- Quick controls & state toggles -->
+                <div class="console-section-title">QUICK DECK &amp; SETTINGS</div>
+                <div class="quick-deck-row">
+                    <button class="settings-btn" id="open-settings-btn">⚙ CONFIG</button>
+                    <button class="control-btn" data-action="lock" id="lock-pc-btn">🔒 LOCK PC</button>
+                    <div class="toggle-container-mini">
+                        <span class="toggle-label-mini">AUTO-RUN</span>
+                        <label class="switch-mini">
+                            <input type="checkbox" id="auto-approve-toggle">
+                            <span class="slider-mini"></span>
+                        </label>
+                    </div>
+                    
+                    <!-- Hidden/Unused DOM nodes preserved for app.js references -->
+                    <button id="voice-btn" style="display:none;"></button>
+                    <input type="checkbox" id="low-resource-toggle" style="display:none;">
+                    <div id="cpu-freq" style="display:none;"></div>
+                    <div id="mem-usage" style="display:none;"></div>
+                    <div id="disk-usage" style="display:none;"></div>
+                    <div id="uptime-value" style="display:none;"></div>
+                    <div id="battery-value" style="display:none;"></div>
+                    <ul id="process-list" style="display:none;"></ul>
+                    <input type="range" id="volume-range" style="display:none;">
+                    <button id="mute-toggle-btn" style="display:none;"></button>
+                    <span id="volume-level-label" style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS CONFIGURATION MODAL -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✦ SYLVIS CORE CONFIGURATION</h3>
+                <button class="close-modal-btn" id="close-settings-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Hidden non-fcc configs preserved to maintain state object keys in app.js -->
+                <div style="display: none;">
+                    <input type="password" id="gemini-key-input">
+                    <input type="password" id="nim-key-input">
+                    <input type="text" id="nim-model-input">
+                    <input type="text" id="ollama-url-input">
+                    <input type="text" id="proxy-url-input">
+                    <input type="password" id="proxy-key-input">
+                    <input type="text" id="proxy-model-input">
+                    <select id="ai-engine-select">
+                        <option value="fcc" selected>Free Claude Proxy</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tts-provider-select">🗣️ Active TTS Provider</label>
+                    <select id="tts-provider-select">
+                        <option value="typecast" selected>Typecast (Anime Voice)</option>
+                        <option value="elevenlabs">Eleven Labs API</option>
+                        <option value="browser">Browser SpeechSynthesis (Local)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="typecast-key-group">
+                    <label for="typecast-key-input">🎙️ Typecast API Key (Anime Voice)</label>
+                    <input type="password" id="typecast-key-input" placeholder="Paste your Typecast API key here">
+                    <small>Get your key at <a href="https://typecast.ai" target="_blank" style="color:var(--cyber-cyan)">typecast.ai</a></small>
+                </div>
+
+                <div class="form-group" id="typecast-voice-group">
+                    <label for="typecast-voice-input">🌸 Typecast Voice Actor ID</label>
+                    <input type="text" id="typecast-voice-input" placeholder="e.g. tc_60e5426de8b95f1d3000d7b5">
+                    <small>Find voice IDs at <a href="https://typecast.ai/voices" target="_blank" style="color:var(--cyber-cyan)">typecast.ai/voices</a></small>
+                </div>
+
+                <div class="form-group" id="elevenlabs-key-group" style="display: none;">
+                    <label for="elevenlabs-key-input">🔑 Eleven Labs API Key</label>
+                    <input type="password" id="elevenlabs-key-input" placeholder="Paste your Eleven Labs API key here">
+                    <small>Get your key at <a href="https://elevenlabs.io" target="_blank" style="color:var(--cyber-cyan)">elevenlabs.io</a></small>
+                </div>
+
+                <div class="form-group" id="elevenlabs-voice-group" style="display: none;">
+                    <label for="elevenlabs-voice-input">👤 Eleven Labs Voice ID</label>
+                    <input type="text" id="elevenlabs-voice-input" placeholder="e.g. 21m00Tcm4TlvDq8ikWAM">
+                    <small>Find voice IDs in the Eleven Labs Voice Library</small>
+                </div>
+
+                <div class="form-group" id="elevenlabs-model-group" style="display: none;">
+                    <label for="elevenlabs-model-input">🤖 Eleven Labs Model ID</label>
+                    <input type="text" id="elevenlabs-model-input" placeholder="e.g. eleven_multilingual_v2">
+                    <small>Defaults to <code>eleven_multilingual_v2</code> if left blank.</small>
+                </div>
+
+                <div class="form-group" id="browser-voice-group">
+                    <label for="voice-select" id="voice-select-label">🔊 Fallback Browser Voice</label>
+                    <select id="voice-select">
+                        <option value="default">Default Browser Voice</option>
+                    </select>
+                </div>
+                
+                <div class="form-group-row">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="tts-feedback-toggle" checked>
+                        <span class="checkmark"></span>
+                        Enable Voice Responses (TTS)
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-settings-btn">CANCEL</button>
+                <button class="btn btn-primary" id="save-settings-btn">SAVE CHANGES</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECURITY PROTOCOL AUTHORIZATION MODAL -->
+    <div class="modal-overlay" id="security-modal">
+        <div class="modal-content security-content">
+            <div class="modal-header security-header">
+                <h3>⚠ SECURITY PROTOCOL — AUTHORIZATION REQUIRED</h3>
+            </div>
+            <div class="modal-body security-body">
+                <div class="security-alert-text">
+                    Sylvis is requesting clearance to execute a system command on your workstation.
+                </div>
+                
+                <div class="security-command-card">
+                    <div class="command-card-header">
+                        <span class="action-type-label">ACTION:</span>
+                        <span class="action-type-value" id="security-action-val">RUN_COMMAND</span>
+                    </div>
+                    <div class="command-card-desc" id="security-desc-val">
+                        Executing system operation.
+                    </div>
+                    <div class="command-card-code">
+                        <code id="security-code-val">...</code>
+                    </div>
+                </div>
+                
+                <div class="security-risk-warning">
+                    ⚠ Execute only if you trust the origin command. Unintended changes can occur.
+                </div>
+            </div>
+            <div class="modal-footer security-footer">
+                <button class="btn btn-secondary btn-abort" id="abort-command-btn">ABORT</button>
+                <button class="btn btn-primary btn-approve" id="approve-command-btn">APPROVE &amp; RUN</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
