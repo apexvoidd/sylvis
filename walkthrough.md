@@ -108,3 +108,10 @@ To verify the newly compiled borderless S.Y.L.V.I.S. PC Assistant:
    - Defined `set_state(self, state)` on `SylvisWidget` to correctly update `self.state = state`.
    - This prevents an `AttributeError` from being raised when the background threads request a state transition (e.g. `listening`, `processing`, `speaking`, `idle`), which was previously crashing the queue loop and disabling text/speech replies.
 
+3. **Reasoning & Chain-of-Thought Filtering**:
+   - Added a `clean_assistant_text` function to post-process model responses.
+   - Automatically strips XML-style `<think>` or `<thinking>` blocks.
+   - Cleans out meta-commentary paragraphs (like "Okay, the user is...") and extracts the direct conversational response from the final meta-reasoning statement.
+   - Ensures that chat logs, TTS voice engines, and `chat_history` store only the final conversational reply, keeping the system clean and preventing the model from repeating its leaked reasoning in subsequent turns.
+
+
