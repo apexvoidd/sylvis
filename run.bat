@@ -34,15 +34,11 @@ echo [System Check] Checking/Installing dependencies from requirements.txt...
 %PYTHON_CMD% -c "import flask, flask_cors, psutil, pycaw, comtypes, transformers, huggingface_hub, requests, webview, keyboard" >nul 2>nul
 if %errorlevel% neq 0 (
     echo [System Check] Installing missing dependencies...
-    %PYTHON_CMD% -m pip install -r requirements.txt --quiet
+    %PYTHON_CMD% -m pip install -r requirements.txt
     if %errorlevel% neq 0 (
-        echo [WARN] Pip installation had issues. Retrying normal installation...
-        %PYTHON_CMD% -m pip install -r requirements.txt
-        if %errorlevel% neq 0 (
-            powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $ws.Popup('Failed to install Python dependencies from requirements.txt.', 0, 'S.Y.L.V.I.S. Launch Error', 16)"
-            pause
-            exit /b 1
-        )
+        powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $ws.Popup('Failed to install Python dependencies from requirements.txt.', 0, 'S.Y.L.V.I.S. Launch Error', 16)"
+        pause
+        exit /b 1
     )
 ) else (
     echo [System Check] All dependencies are already installed.
