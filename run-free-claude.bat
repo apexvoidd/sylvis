@@ -6,17 +6,22 @@ echo        STARTING FREE CLAUDE CODE SERVICE
 echo ===================================================
 echo.
 echo [System Check] Checking for fcc-server...
-where fcc-server >nul 2>nul
-if %errorlevel% neq 0 (
-    echo [System Check] fcc-server not in default PATH. Checking user local bin...
-    if exist "%USERPROFILE%\.local\bin\fcc-server.exe" (
-        set "PATH=%PATH%;%USERPROFILE%\.local\bin"
-        echo [System Check] Added fcc-server to temporary session PATH.
-    ) else (
-        echo [ERROR] fcc-server could not be found.
-        echo Please install it or make sure it is in your PATH.
-        pause
-        exit /b 1
+if exist "%~dp0bin\fcc-server.exe" (
+    set "PATH=%PATH%;%~dp0bin"
+    echo [System Check] Added local bundled fcc-server to temporary session PATH.
+) else (
+    where fcc-server >nul 2>nul
+    if %errorlevel% neq 0 (
+        echo [System Check] fcc-server not in default PATH. Checking user local bin...
+        if exist "%USERPROFILE%\.local\bin\fcc-server.exe" (
+            set "PATH=%PATH%;%USERPROFILE%\.local\bin"
+            echo [System Check] Added fcc-server to temporary session PATH.
+        ) else (
+            echo [ERROR] fcc-server could not be found.
+            echo Please install it or make sure it is in your PATH.
+            pause
+            exit /b 1
+        )
     )
 )
 

@@ -15,8 +15,14 @@ powershell -NoProfile -Command "Stop-Process -Id ((Get-NetTCPConnection -LocalPo
 :: Wait for the OS to release the port sockets
 ping -n 3 127.0.0.1 >nul
 
-:: Start fcc-server silently in background of this hidden script (does NOT open a new window)
-start /b "" "%USERPROFILE%\.local\bin\fcc-server.exe"
+:: Start fcc-server silently in background of this hidden script (prefer local bundled, then user local bin, then global PATH)
+if exist "%~dp0bin\fcc-server.exe" (
+    start /b "" "%~dp0bin\fcc-server.exe"
+) else if exist "%USERPROFILE%\.local\bin\fcc-server.exe" (
+    start /b "" "%USERPROFILE%\.local\bin\fcc-server.exe"
+) else (
+    start /b "" fcc-server
+)
 
 :: Wait a brief moment (approx. 3 seconds) for fcc-server to initialize
 ping -n 4 127.0.0.1 >nul
