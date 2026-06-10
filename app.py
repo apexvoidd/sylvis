@@ -568,6 +568,9 @@ widget = None
 console = None
 
 def get_fcc_auth_token():
+    env_token = os.environ.get("ANTHROPIC_AUTH_TOKEN")
+    if env_token:
+        return env_token
     try:
         fcc_env_path = os.path.join(os.path.expanduser("~"), ".fcc", ".env")
         if os.path.exists(fcc_env_path):

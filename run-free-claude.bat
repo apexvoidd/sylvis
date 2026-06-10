@@ -1,4 +1,5 @@
 @echo off
+set "ANTHROPIC_AUTH_TOKEN=freecc"
 title Free Claude Code Launcher (NVIDIA NIM Proxy)
 color 0A
 echo ===================================================

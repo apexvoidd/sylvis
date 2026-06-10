@@ -1,4 +1,5 @@
 @echo off
+set "ANTHROPIC_AUTH_TOKEN=freecc"
 title S.Y.L.V.I.S. Launcher
 color 0B
 echo ===================================================

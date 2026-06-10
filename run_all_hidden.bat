@@ -1,4 +1,5 @@
 @echo off
+set "ANTHROPIC_AUTH_TOKEN=freecc"
 cd /d "%~dp0"
 
 :: Check Python 3.11 installation
