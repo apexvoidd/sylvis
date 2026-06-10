@@ -22,15 +22,13 @@ if not exist ".venv" (
 set "PYTHON_CMD=.venv\Scripts\python"
 
 :: Check and install requirements
-%PYTHON_CMD% -c "import flask, flask_cors, psutil, pycaw, comtypes, transformers, huggingface_hub, requests, webview, keyboard" >nul 2>nul
+%PYTHON_CMD% -c "import flask, flask_cors, psutil, pycaw, comtypes, transformers, huggingface_hub, requests, webview, keyboard, speech_recognition" >nul 2>nul
 if %errorlevel% neq 0 (
-    %PYTHON_CMD% -m pip install -r requirements.txt --quiet
+    powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $ws.Popup('First-time setup: S.Y.L.V.I.S. needs to download required Python libraries. A console window will open to show the download progress.', 0, 'S.Y.L.V.I.S. First-Run Setup', 64)"
+    start /wait "S.Y.L.V.I.S. Dependency Installer" cmd /c "%PYTHON_CMD% -m pip install -r requirements.txt"
     if %errorlevel% neq 0 (
-        %PYTHON_CMD% -m pip install -r requirements.txt
-        if %errorlevel% neq 0 (
-            powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $ws.Popup('Failed to install Python dependencies from requirements.txt. Please check your internet connection.', 0, 'S.Y.L.V.I.S. Launch Error', 16)"
-            exit /b 1
-        )
+        powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $ws.Popup('Failed to install Python dependencies from requirements.txt. Please check your internet connection.', 0, 'S.Y.L.V.I.S. Launch Error', 16)"
+        exit /b 1
     )
 )
 

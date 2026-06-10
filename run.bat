@@ -32,7 +32,7 @@ if not exist ".venv" (
 set "PYTHON_CMD=.venv\Scripts\python"
 
 echo [System Check] Checking/Installing dependencies from requirements.txt...
-%PYTHON_CMD% -c "import flask, flask_cors, psutil, pycaw, comtypes, transformers, huggingface_hub, requests, webview, keyboard" >nul 2>nul
+%PYTHON_CMD% -c "import flask, flask_cors, psutil, pycaw, comtypes, transformers, huggingface_hub, requests, webview, keyboard, speech_recognition" >nul 2>nul
 if %errorlevel% neq 0 (
     echo [System Check] Installing missing dependencies...
     %PYTHON_CMD% -m pip install -r requirements.txt
